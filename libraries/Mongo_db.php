@@ -302,6 +302,56 @@ class Mongo_db
 	 	$this->wheres[$field]['$ne'] = $x;
 	 	return($this);
 	 }
+	 
+	 /**
+	 *	--------------------------------------------------------------------------------
+	 *	WHERE OR
+	 *	--------------------------------------------------------------------------------
+	 *
+	 *	Get the documents where the value of a $field is in one or more values
+	 *
+	 *	@usage = $this->mongo_db->where_or('foo', array( 'foo', 'bar', 'blegh' );
+	 */
+	 
+	 public function where_or($field = "", $values)
+	 {
+	 	$this->where_init($field);
+	 	$this->wheres[$field]['$or'] = $values;
+	 	return($this);
+	 }
+	 
+	/**
+	 *	--------------------------------------------------------------------------------
+	 *	WHERE AND
+	 *	--------------------------------------------------------------------------------
+	 *
+	 *	Get the documents where the elements match the specified values
+	 *
+	 *	@usage = $this->mongo_db->where_and( array ( 'foo' => 1, 'b' => 'someexample' );
+	 */
+	 
+	 public function where_and( $elements_values = array() ) {
+	 	foreach ( $elements_values as $element => $val ) {
+	 		$this->wheres[$element] = $val;
+	 	}
+	 	return($this);
+	 }
+	 
+	 /**
+	 *	--------------------------------------------------------------------------------
+	 *	WHERE MOD
+	 *	--------------------------------------------------------------------------------
+	 *
+	 *	Get the documents where $field % $mod = $result
+	 *
+	 *	@usage = $this->mongo_db->where_mod( 'foo', 10, 1 );
+	 */
+	 
+	 public function where_mod( $field, $num, $result ) {
+	 	$this->where_init($field);
+	 	$this->wheres[$field]['$mod'] = array ( $num, $result );
+	 	return($this);
+	 }
 	
 	/**
 	 *	--------------------------------------------------------------------------------
