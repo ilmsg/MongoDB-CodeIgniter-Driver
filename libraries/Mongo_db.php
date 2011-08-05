@@ -352,6 +352,23 @@ class Mongo_db
 	 	$this->wheres[$field]['$mod'] = array ( $num, $result );
 	 	return($this);
 	 }
+
+	/**
+	*	--------------------------------------------------------------------------------
+	*	Where size
+	*	--------------------------------------------------------------------------------
+	*
+	*	Get the documents where the size of a field is in a given $size int
+	*
+	*	@usage : $this->mongo_db->where_size('foo', 1)->get('foobar');
+	*/
+	
+	public function where_size($field = "", $size = "")
+	{
+		$this->_where_init($field);
+		$this->wheres[$field]['$size'] = $size;
+		return ($this);
+	}
 	
 	/**
 	 *	--------------------------------------------------------------------------------
