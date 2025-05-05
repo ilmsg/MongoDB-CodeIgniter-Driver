@@ -1,24 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/**
- * CodeIgniter MongoDB Active Record Library
- *
- * A library to interface with the NoSQL database MongoDB. For more information see http://www.mongodb.org
- * Originally created by Alex Bilbie, but extended and updated by Kyle J. Dye
- *
- * @package		CodeIgniter
- * @author		Kyle J. Dye | www.kyledye.com | kyle@kyledye.com
- * @copyright	Copyright (c) 2010, Kyle J. Dye.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://kyledye.com
- * @version		Version 0.3
- */
-
 class Mongo_db 
 {
 	
 	private $CI;
-	private $config_file = 'mongo_db';
+	private $config_file = 'config_mongodb';
 	
 	private $connection;
 	private $db;
@@ -588,6 +574,40 @@ class Mongo_db
 	 	
 	 }
 	 
+	 /**
+	 *	--------------------------------------------------------------------------------
+	 *	SAVE
+	 *	--------------------------------------------------------------------------------
+	 *
+	 *	If the object is from the database, update the existing database object, otherwise insert this object. 
+	 *
+	 *	@usage = $this->mongo_db->save('foo', $data = array());
+	 */
+	
+	 public function save($collection = "", $data = array())
+	 {
+	 	if(empty($collection))
+	 	{
+	 		show_error("No Mongo collection selected to update", 500);
+	 	}
+	 	
+	 	if(count($data) == 0 || !is_array($data))
+	 	{
+	 		show_error("Nothing to update in Mongo collection or update is not an array", 500);
+	  }
+	 	
+	 	try
+	 	{
+	 		$this->db->{$collection}->save($data);
+	 		return(TRUE);
+	 	} 
+	 	catch(MongoCursorException $e)
+	 	{
+	 		show_error("Update of data into MongoDB failed: {$e->getMessage()}", 500);
+	 	}
+	 	
+	 }
+	 
 	/**
 	 *	--------------------------------------------------------------------------------
 	 *	UPDATE
@@ -881,8 +901,14 @@ class Mongo_db
 		} 
 		catch(MongoConnectionException $e)
 		{
-			show_error("Unable to connect to MongoDB: {$e->getMessage()}", 500);
+			//show_error("Unable to connect to MongoDB: {$e->getMessage()}", 500);
+			return $e;
 		}
+	}
+	
+	function is_connected()
+	{
+		return $this->connection;
 	}
 	
 	/**
@@ -931,7 +957,9 @@ class Mongo_db
 			$connection_string .= "{$this->host}";
 		}
 		
-		$this->connection_string = trim($connection_string);
+        $connection_string .= "/" . $this->dbname;
+        
+		$this->connection_string = trim($connection_string);        
 	}
 	
 	/**
